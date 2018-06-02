@@ -7,7 +7,6 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.widget.TextView
 import com.proyectodev.yummydroid.R
 import com.proyectodev.yummydroid.adapter.CommandsListRecyclerViewAdapter
@@ -69,13 +68,11 @@ class TableDetailActivity: AppCompatActivity() {
     }
 
     fun addCommand() {
-        table.addCommand(Command(Dishes.getDish(0),"Variaciones"))
-        adapter.notifyDataSetChanged()
-
+        val intent = Intent(this, DishesListActivity::class.java)
+        startActivity(intent)
     }
 
     fun removeCommand(position: Int) {
-        Log.d("Boton", "Se ha pulsado el boton de eliminar la comanda ${position}")
         val removedCommand = table.getCommand(position)
         table.removeCommand(removedCommand)
         adapter.notifyDataSetChanged()
