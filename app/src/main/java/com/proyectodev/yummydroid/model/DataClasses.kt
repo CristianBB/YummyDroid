@@ -38,7 +38,11 @@ data class Table(var name: String) {
         commands.remove(command)
     }
 
-    fun getCommands(): List<Command> {
+    fun getCommand(index: Int): Command {
+        return commands[index]
+    }
+
+    fun getCommands(): MutableList<Command> {
         return commands
     }
 
