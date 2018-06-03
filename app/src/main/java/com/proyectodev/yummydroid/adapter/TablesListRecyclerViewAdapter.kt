@@ -1,5 +1,7 @@
 package com.proyectodev.yummydroid.adapter
 
+import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +37,12 @@ class TablesListRecyclerViewAdapter: RecyclerView.Adapter<TablesListRecyclerView
         val item = items[position]
 
         holder.table = item
+
+        if(position %2 == 1) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.holderPair));
+        } else {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.holderOdd));
+        }
     }
 
     fun setTables(tables: MutableList<Table>) {

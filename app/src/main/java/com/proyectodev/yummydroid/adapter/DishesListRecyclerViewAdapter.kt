@@ -4,10 +4,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import com.proyectodev.yummydroid.R
 import com.proyectodev.yummydroid.model.Dish
 import com.proyectodev.yummydroid.model.Dishes
+import kotlinx.android.synthetic.main.item_dish.view.*
 
 class DishesListRecyclerViewAdapter: RecyclerView.Adapter<DishesListRecyclerViewAdapter.DishViewHolder>{
 
@@ -36,7 +38,12 @@ class DishesListRecyclerViewAdapter: RecyclerView.Adapter<DishesListRecyclerView
     inner class DishViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         var dish: Dish? = null
             set(value) {
-                itemView.findViewById<TextView>(R.id.dish_name_text).text = value?.name
+                value?.let {
+                    itemView.item_dish_name_text.text
+                }
+
+                itemView.findViewById<TextView>(R.id.item_dish_name_text).text = value?.name
+                itemView.findViewById<ImageView>(R.id.item_dish_image).setImageResource(value?.image)
                 field = value
             }
 

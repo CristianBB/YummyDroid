@@ -1,5 +1,6 @@
 package com.proyectodev.yummydroid.activity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -20,6 +21,7 @@ class TableDetailActivity: AppCompatActivity() {
     companion object {
 
         val EXTRA_TABLE_INDEX = "EXTRA_TABLE_INDEX"
+        val REQUEST_COMMAND_DISH = 1
 
         fun intent(context: Context, tableIndex: Int): Intent {
             val intent = Intent(context, TableDetailActivity::class.java)
@@ -55,7 +57,7 @@ class TableDetailActivity: AppCompatActivity() {
 
         // Obtenemos referencia a los elementos de la interfaz
         val tableNameText = findViewById<TextView>(R.id.detail_table_name_text)
-        var addCommandBtn = findViewById<FloatingActionButton>(R.id.detail_add_command_btn)
+        val addCommandBtn = findViewById<FloatingActionButton>(R.id.detail_add_command_btn)
 
         addCommandBtn.setOnClickListener {
             addCommand()
@@ -67,9 +69,25 @@ class TableDetailActivity: AppCompatActivity() {
         commandList.adapter = adapter
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_COMMAND_DISH && resultCode == Activity.RESULT_OK) {
+            data?.let {
+                val dishIndex = it.getIntExtra(DishDetailActivity.EXTRA_DISH_INDEX, 0)
+                val variants = it.getStringExtra(DishDetailActivity.EXTRA_VARIANTS)
+
+                val dishAdded = Dishes.getDish(dishIndex)
+                val command = Command(dishAdded, variants)
+
+                table.addCommand(command)
+                adapter.notifyDataSetChanged()
+            }
+        }
+    }
+
     fun addCommand() {
         val intent = Intent(this, DishesListActivity::class.java)
-        startActivity(intent)
+        startActivityForResult(intent, REQUEST_COMMAND_DISH)
     }
 
     fun removeCommand(position: Int) {

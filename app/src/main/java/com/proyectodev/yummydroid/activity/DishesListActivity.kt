@@ -1,13 +1,12 @@
 package com.proyectodev.yummydroid.activity
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import com.proyectodev.yummydroid.R
 import com.proyectodev.yummydroid.adapter.DishesListRecyclerViewAdapter
-import com.proyectodev.yummydroid.model.Dishes
 
 class DishesListActivity : AppCompatActivity() {
 
@@ -31,7 +30,11 @@ class DishesListActivity : AppCompatActivity() {
         dishesList.adapter = adapter
     }
 
+
     fun showDish(position: Int) {
-        Log.d("Boton", "Se ha pulsado el plato ${Dishes.getDish(position)}")
+        val intent = DishDetailActivity.intent(this, position)
+        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
+        startActivity(intent)
+        finish()
     }
 }
