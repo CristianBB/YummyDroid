@@ -55,7 +55,7 @@ class CommandsListRecyclerViewAdapter: RecyclerView.Adapter<CommandsListRecycler
             }
 
         init {
-            itemView.setOnClickListener {
+            itemView.command_remove_btn.setOnClickListener {
                 command?.let {
                     itemClickListener?.invoke(command as Command, adapterPosition)
                 }
