@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="dishOverlay">#a0000000</color>
+    <color name="background">#e0f2f9</color>
     <color name="holderOdd">#FF82BDD2</color>
     <color name="holderPair">#FFACCDD9</color>
 </resources>

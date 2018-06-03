@@ -2,11 +2,12 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/background">
 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -22,7 +23,8 @@
         android:id="@+id/detail_table_name_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:gravity="center"
+        android:textSize="20sp"
         android:textStyle="bold"
         tools:text="Mesa 1" />
 
@@ -30,6 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:text="Comandas"/>
 
@@ -37,7 +40,9 @@
         android:id="@+id/detail_command_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="4dp"/>
+        android:layout_marginTop="4dp"
+
+        />
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

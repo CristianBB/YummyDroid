@@ -1,5 +1,6 @@
 package com.proyectodev.yummydroid.adapter
 
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.TextView
 import com.proyectodev.yummydroid.R
 import com.proyectodev.yummydroid.model.Command
 import com.proyectodev.yummydroid.model.Table
+import kotlinx.android.synthetic.main.item_command.view.*
 
 class CommandsListRecyclerViewAdapter: RecyclerView.Adapter<CommandsListRecyclerViewAdapter.CommandViewHolder>{
 
@@ -33,12 +35,22 @@ class CommandsListRecyclerViewAdapter: RecyclerView.Adapter<CommandsListRecycler
         val item = table.getCommand(position)
 
         holder.command = item
+
+        if(position %2 == 1) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.holderPair));
+        } else {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.holderOdd));
+        }
     }
 
     inner class CommandViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         var command: Command? = null
             set(value) {
-                itemView.findViewById<TextView>(R.id.command_dish_name_text).text = value?.dish?.name
+                value?.let {
+                    itemView.command_dish_name_text.text = it.dish.name
+                    itemView.command_dish_price_text.text = "${it.dish.price} €"
+                    itemView.command_variants_text.text = it.variants
+                }
                 field = value
             }
 
