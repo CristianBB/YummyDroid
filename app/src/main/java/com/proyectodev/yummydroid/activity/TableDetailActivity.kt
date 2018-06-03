@@ -5,10 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import com.proyectodev.yummydroid.R
 import com.proyectodev.yummydroid.adapter.CommandsListRecyclerViewAdapter
 import com.proyectodev.yummydroid.model.Command
@@ -69,6 +74,25 @@ class TableDetailActivity: AppCompatActivity() {
         commandList.adapter = adapter
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_table_detail, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menu_bill -> {
+                showAlertBill()
+                return true
+            }
+            R.id.menu_reset -> {
+                showAlertReset()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_COMMAND_DISH && resultCode == Activity.RESULT_OK) {
@@ -94,5 +118,41 @@ class TableDetailActivity: AppCompatActivity() {
         val removedCommand = table.getCommand(position)
         table.removeCommand(removedCommand)
         adapter.notifyDataSetChanged()
+    }
+
+    fun showAlertReset() {
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle("Vaciar Mesa")
+        builder.setMessage("Las comandas actuales se perderán, ¿Desea continuar?")
+
+        builder.setPositiveButton("Aceptar"){dialog, which ->
+            table.resetCommands()
+            adapter.notifyDataSetChanged()
+            Toast.makeText(this, "Comandas eliminadas", Toast.LENGTH_SHORT).show()
+        }
+
+        builder.setNegativeButton("Cancelar"){dialog, which -> }
+        builder.setCancelable(true)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    fun showAlertBill() {
+        val builder = AlertDialog.Builder(this)
+
+        var totalPrice = 0F
+        table.getCommands().forEach {
+            totalPrice = totalPrice + it.dish.price
+        }
+
+        builder.setTitle("Cuenta de la mesa ${table.name}")
+        builder.setMessage("${totalPrice} €")
+        builder.setPositiveButton("Aceptar"){dialog, which -> }
+        builder.setCancelable(true)
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }
