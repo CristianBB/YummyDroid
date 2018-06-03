@@ -14,10 +14,11 @@ import com.proyectodev.yummydroid.R
 import com.proyectodev.yummydroid.model.Dish
 import com.proyectodev.yummydroid.model.Dishes
 import android.app.Activity
+import com.proyectodev.yummydroid.fragments.DishDetailFragment
 import java.text.DecimalFormat
 
 
-class DishDetailActivity : AppCompatActivity() {
+class DishDetailActivity : AppCompatActivity(), DishDetailFragment.OnItemClickListener {
 
     companion object {
 
@@ -32,53 +33,27 @@ class DishDetailActivity : AppCompatActivity() {
         }
     }
 
-    val dish: Dish by lazy {
-        // Sacamos los datos con los que configurar la interfaz
-        val dish = Dishes[intent.getIntExtra(DishDetailActivity.EXTRA_DISH_INDEX, 0)]
-        dish
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dish_detail)
 
-        // Obtenemos referencia a los elementos de la interfaz
-        val dishImage = findViewById<ImageView>(R.id.detail_dish_image)
-        val nameText = findViewById<TextView>(R.id.detail_dish_name_text)
-        val descriptionText = findViewById<TextView>(R.id.detail_dish_description_text)
-        val priceText = findViewById<TextView>(R.id.detail_dish_price_text)
-        val allergensLayout = findViewById<LinearLayout>(R.id.detail_allergens_layout)
-        val addBtn = findViewById<FloatingActionButton>(R.id.detail_add_dish_btn)
+        val dishIndex = intent.getIntExtra(EXTRA_DISH_INDEX, 0)
 
-        addBtn.setOnClickListener {
-            addDish()
+        if (savedInstanceState == null) {
+            val fragment = DishDetailFragment.newInstance(dishIndex)
+
+            supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.dish_detail_container, fragment)
+                    .commit()
         }
 
-        // Actualizamos la interfaz
-        dishImage.setImageResource(dish.image)
-        nameText.text = dish.name
-        descriptionText.text = dish.description
-        priceText.text = "${dish.price} €"
-
-        dish.allergens?.let {
-            it.forEach {
-                val imageView = ImageView(this)
-                imageView.setImageResource(it.image)
-                imageView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-
-                allergensLayout.addView(imageView)
-            }
-        }
     }
 
-    fun addDish() {
-        // Obtenemos referencia a las instrucciones para cocina
-        val variantsText = findViewById<EditText>(R.id.detail_variants_text)
-        val variantsString = variantsText.text.toString()
-
+    override fun onAddDishClicked(dishIndex: Int, variants: String) {
         val returnIntent = Intent()
-        returnIntent.putExtra(EXTRA_DISH_INDEX, Dishes.getIndex(dish))
-        returnIntent.putExtra(EXTRA_VARIANTS, variantsString)
+        returnIntent.putExtra(EXTRA_DISH_INDEX, dishIndex)
+        returnIntent.putExtra(EXTRA_VARIANTS, variants)
 
         setResult(Activity.RESULT_OK, returnIntent)
         finish()

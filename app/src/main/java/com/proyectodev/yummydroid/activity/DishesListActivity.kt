@@ -3,36 +3,28 @@ package com.proyectodev.yummydroid.activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import com.proyectodev.yummydroid.R
-import com.proyectodev.yummydroid.adapter.DishesListRecyclerViewAdapter
+import com.proyectodev.yummydroid.fragments.DishesListFragment
 
-class DishesListActivity : AppCompatActivity() {
-
-    val dishesList: RecyclerView by lazy {
-        val dishesList: RecyclerView = findViewById(R.id.dishes_list)
-        dishesList.layoutManager = LinearLayoutManager(this)
-        dishesList
-    }
-
-    val adapter: DishesListRecyclerViewAdapter by lazy {
-        val adapter = DishesListRecyclerViewAdapter{item, position ->
-            showDish(position)
-        }
-        adapter
-    }
+class DishesListActivity : AppCompatActivity(), DishesListFragment.OnItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dishes_list)
 
-        dishesList.adapter = adapter
+        if (savedInstanceState == null) {
+            val fragment = DishesListFragment()
+
+            supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.dishes_list_container, fragment)
+                    .commit()
+        }
     }
 
-
-    fun showDish(position: Int) {
-        val intent = DishDetailActivity.intent(this, position)
+    // Eventos de DishesListFragment
+    override fun onShowDishClicked(dishIndex: Int) {
+        val intent = DishDetailActivity.intent(this, dishIndex)
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
         startActivity(intent)
         finish()

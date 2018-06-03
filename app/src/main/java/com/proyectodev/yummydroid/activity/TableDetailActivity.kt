@@ -16,17 +16,19 @@ import android.widget.TextView
 import android.widget.Toast
 import com.proyectodev.yummydroid.R
 import com.proyectodev.yummydroid.adapter.CommandsListRecyclerViewAdapter
+import com.proyectodev.yummydroid.fragments.TableDetailFragment
 import com.proyectodev.yummydroid.model.Command
 import com.proyectodev.yummydroid.model.Dishes
 import com.proyectodev.yummydroid.model.Table
 import com.proyectodev.yummydroid.model.Tables
 
-class TableDetailActivity: AppCompatActivity() {
+class TableDetailActivity: AppCompatActivity(), TableDetailFragment.OnItemClickListener {
 
     companion object {
 
         val EXTRA_TABLE_INDEX = "EXTRA_TABLE_INDEX"
         val REQUEST_COMMAND_DISH = 1
+        val TAG_TABLE_DETAIL_FRAGMENT = "TAG_TABLE_DETAIL_FRAGMENT"
 
         fun intent(context: Context, tableIndex: Int): Intent {
             val intent = Intent(context, TableDetailActivity::class.java)
@@ -36,61 +38,21 @@ class TableDetailActivity: AppCompatActivity() {
         }
     }
 
-    val table: Table by lazy {
-        // Sacamos los datos con los que configurar la interfaz
-        val table = Tables[intent.getIntExtra(EXTRA_TABLE_INDEX, 0)]
-        table
-    }
-
-    val commandList: RecyclerView by lazy {
-        val commandList: RecyclerView = findViewById(R.id.detail_command_list)
-        commandList.layoutManager = LinearLayoutManager(this)
-        commandList
-    }
-
-    val adapter: CommandsListRecyclerViewAdapter by lazy {
-        val adapter = CommandsListRecyclerViewAdapter(table,
-                {item, position ->
-                    removeCommand(position)
-                })
-        adapter
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_table_detail)
 
-        // Obtenemos referencia a los elementos de la interfaz
-        val tableNameText = findViewById<TextView>(R.id.detail_table_name_text)
-        val addCommandBtn = findViewById<FloatingActionButton>(R.id.detail_add_command_btn)
+        val tableIndex = intent.getIntExtra(EXTRA_TABLE_INDEX, 0)
 
-        addCommandBtn.setOnClickListener {
-            addCommand()
+        if (savedInstanceState == null) {
+            val fragment = TableDetailFragment.newInstance(tableIndex)
+
+            supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.table_detail_container, fragment, TAG_TABLE_DETAIL_FRAGMENT)
+                    .commit()
         }
-
-        // Actualizamos la interfaz
-        tableNameText.text = table.name
-
-        commandList.adapter = adapter
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_table_detail, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.menu_bill -> {
-                showAlertBill()
-                return true
-            }
-            R.id.menu_reset -> {
-                showAlertReset()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -103,56 +65,20 @@ class TableDetailActivity: AppCompatActivity() {
                 val dishAdded = Dishes.getDish(dishIndex)
                 val command = Command(dishAdded, variants)
 
-                table.addCommand(command)
-                adapter.notifyDataSetChanged()
+                // Obtenemos el fragmento de detalle
+                val fragment = supportFragmentManager.findFragmentByTag(TAG_TABLE_DETAIL_FRAGMENT) as TableDetailFragment
+
+                // Agregamos la comanda recibida y avisamos al adapter de los cambios usando el Fragment
+                fragment.table.addCommand(command)
+                fragment.adapter.notifyDataSetChanged()
             }
         }
     }
 
-    fun addCommand() {
+    // Eventos de TableDetailFragment
+    override fun onAddCommandClicked() {
         val intent = Intent(this, DishesListActivity::class.java)
-        startActivityForResult(intent, REQUEST_COMMAND_DISH)
+        startActivityForResult(intent, TableDetailActivity.REQUEST_COMMAND_DISH)
     }
 
-    fun removeCommand(position: Int) {
-        val removedCommand = table.getCommand(position)
-        table.removeCommand(removedCommand)
-        adapter.notifyDataSetChanged()
-    }
-
-    fun showAlertReset() {
-        val builder = AlertDialog.Builder(this)
-
-        builder.setTitle("Vaciar Mesa")
-        builder.setMessage("Las comandas actuales se perderán, ¿Desea continuar?")
-
-        builder.setPositiveButton("Aceptar"){dialog, which ->
-            table.resetCommands()
-            adapter.notifyDataSetChanged()
-            Toast.makeText(this, "Comandas eliminadas", Toast.LENGTH_SHORT).show()
-        }
-
-        builder.setNegativeButton("Cancelar"){dialog, which -> }
-        builder.setCancelable(true)
-
-        val dialog = builder.create()
-        dialog.show()
-    }
-
-    fun showAlertBill() {
-        val builder = AlertDialog.Builder(this)
-
-        var totalPrice = 0F
-        table.getCommands().forEach {
-            totalPrice = totalPrice + it.dish.price
-        }
-
-        builder.setTitle("Cuenta de la mesa ${table.name}")
-        builder.setMessage("${totalPrice} €")
-        builder.setPositiveButton("Aceptar"){dialog, which -> }
-        builder.setCancelable(true)
-
-        val dialog = builder.create()
-        dialog.show()
-    }
 }
