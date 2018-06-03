@@ -1,4 +1,4 @@
-# Everpobre
+# YummyDroid
 
 Aplicación Android para la gestión de mesas de un restaurante
 
